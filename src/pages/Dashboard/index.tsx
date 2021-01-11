@@ -109,12 +109,12 @@ const Dashboard: React.FC = () => {
     return () => clearInterval(timeout);
   }, [user.id, setAppointments, selectedDate]);
 
-  const disabledDays = useMemo(() => monthAvailability.filter(monthDay => !monthDay.available).map(monthDay => {
-    const date = new Date();
-    date.setMonth(currentMonth.getMonth());
-    date.setDate(monthDay.day);
-    return date;
-  }), [currentMonth, monthAvailability]);
+  // const disabledDays = useMemo(() => monthAvailability.filter(monthDay => !monthDay.available).map(monthDay => {
+  //   const date = new Date();
+  //   date.setMonth(currentMonth.getMonth());
+  //   date.setDate(monthDay.day);
+  //   return date;
+  // }), [currentMonth, monthAvailability]);
 
   const selectedDateAsText = useMemo(() => format(selectedDate, "'Dia ' dd 'de' MMMM", {
     locale: ptBR
@@ -221,7 +221,7 @@ const Dashboard: React.FC = () => {
             onMonthChange={handleMonthChange}
             selectedDays={selectedDate}
             onDayClick={handleDateChange}
-            disabledDays={[...DEFAULT_DISABLED_DAYS, ...disabledDays]}
+            disabledDays={DEFAULT_DISABLED_DAYS}
           />
         </Calendar>
       </Content>

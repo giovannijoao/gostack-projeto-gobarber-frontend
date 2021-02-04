@@ -1,20 +1,14 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
-import SignIn from '../../pages/SignIn';
+import SignUp from '../../pages/SignUp';
+import api from '../../services/apiClient';
 
 const mockedHistoryPush = jest.fn();
-const mockedSignIn = jest.fn();
 jest.mock('react-router-dom', () => ({
   useHistory: () => ({
     push: mockedHistoryPush,
   }),
   Link: ({ children }: { children: React.ReactNode }) => children,
-}));
-
-jest.mock('../../hooks/auth', () => ({
-  useAuth: () => ({
-    signIn: mockedSignIn,
-  }),
 }));
 
 const mockedAddToast = jest.fn();
@@ -24,19 +18,30 @@ jest.mock('../../hooks/toast', () => ({
   }),
 }));
 
-let emailField: HTMLElement,
+jest.mock('../../services/apiClient', () => ({
+  post: jest.fn(),
+}));
+
+let nameField: HTMLElement,
+  emailField: HTMLElement,
   passwordField: HTMLElement,
   buttonElement: HTMLElement;
-describe('Page - SignIn', () => {
+describe('Page - SignUp', () => {
   beforeEach(() => {
-    const { getByPlaceholderText, getByText } = render(<SignIn />);
+    const { getByPlaceholderText, getByText } = render(<SignUp />);
+    nameField = getByPlaceholderText('Nome');
     emailField = getByPlaceholderText('E-mail');
     passwordField = getByPlaceholderText('Senha');
-    buttonElement = getByText('Entrar');
+    buttonElement = getByText('Cadastrar');
     mockedHistoryPush.mockReset();
     mockedAddToast.mockReset();
   });
-  it('should be able to sign in', async () => {
+  it('should be able to sign up', async () => {
+    fireEvent.change(nameField, {
+      target: {
+        value: 'John Doe',
+      },
+    });
     fireEvent.change(emailField, {
       target: {
         value: 'john-doe@example.com',
@@ -48,9 +53,9 @@ describe('Page - SignIn', () => {
       },
     });
     fireEvent.click(buttonElement);
-    await waitFor(() => expect(mockedHistoryPush).toBeCalledWith('/dashboard'));
+    await waitFor(() => expect(mockedHistoryPush).toBeCalledWith('/'));
   });
-  it('should not be able to sign in with invalid credentials', async () => {
+  it('should not be able to sign up with invalid credentials', async () => {
     fireEvent.change(emailField, {
       target: {
         value: 'john-doe',
@@ -59,11 +64,16 @@ describe('Page - SignIn', () => {
     fireEvent.click(buttonElement);
     await waitFor(() => expect(mockedHistoryPush).not.toHaveBeenCalled());
   });
-  it('should display an error if login fails', async () => {
-    mockedSignIn.mockImplementation(() => {
+  it('should display an error if sign up', async () => {
+    jest.spyOn(api, 'post').mockImplementation(() => {
       throw new Error();
     });
 
+    fireEvent.change(nameField, {
+      target: {
+        value: 'John Doe',
+      },
+    });
     fireEvent.change(emailField, {
       target: {
         value: 'john-doe@example.com',

@@ -17,7 +17,7 @@ interface AuthState {
   user: User;
 }
 
-interface AuthContextData {
+export interface AuthContextData {
   user: User;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
@@ -57,8 +57,8 @@ export const AuthProvider: React.FC = ({ children }) => {
     localStorage.setItem('@GoBarber:user', JSON.stringify(userData));
     setData({
       token: data.token,
-      user: userData
-    })
+      user: userData,
+    });
   }, []);
 
   const signOut = useCallback(() => {
@@ -69,7 +69,9 @@ export const AuthProvider: React.FC = ({ children }) => {
   }, [data.token]);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut, updateUser }}>
+    <AuthContext.Provider
+      value={{ user: data.user, signIn, signOut, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -77,8 +79,5 @@ export const AuthProvider: React.FC = ({ children }) => {
 
 export function useAuth(): AuthContextData {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider.');
-  }
   return context;
 }

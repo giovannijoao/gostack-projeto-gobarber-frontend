@@ -17,7 +17,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   containerStyle?: CSSProperties;
 }
 
-const Input: React.FC<InputProps> = ({ name, containerStyle, icon: Icon, ...rest }) => {
+const Input: React.FC<InputProps> = ({
+  name,
+  containerStyle,
+  icon: Icon,
+  ...rest
+}) => {
   const { fieldName, defaultValue, error, registerField } = useField(name);
   const [isFilled, setIsFilled] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -40,7 +45,13 @@ const Input: React.FC<InputProps> = ({ name, containerStyle, icon: Icon, ...rest
     });
   }, [fieldName, registerField]);
   return (
-    <Container isErrored={!!error} isFocused={isFocused} isFilled={isFilled} style={containerStyle}>
+    <Container
+      data-testid="input-container"
+      isErrored={!!error}
+      isFocused={isFocused}
+      isFilled={isFilled}
+      style={containerStyle}
+    >
       {Icon && <Icon size={20} />}
       <input
         {...rest}

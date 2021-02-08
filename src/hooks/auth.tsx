@@ -53,20 +53,23 @@ export const AuthProvider: React.FC = ({ children }) => {
     setData({ token, user });
   }, []);
 
-  const updateUser = useCallback(async (userData: User) => {
-    localStorage.setItem('@GoBarber:user', JSON.stringify(userData));
-    setData({
-      token: data.token,
-      user: userData,
-    });
-  }, []);
+  const updateUser = useCallback(
+    async (userData: User) => {
+      localStorage.setItem('@GoBarber:user', JSON.stringify(userData));
+      setData({
+        token: data.token,
+        user: userData,
+      });
+    },
+    [data.token],
+  );
 
   const signOut = useCallback(() => {
     localStorage.removeItem('@GoBarber:token');
     localStorage.removeItem('@GoBarber:user');
     setData({} as AuthState);
     Reflect.deleteProperty(api.defaults.headers, 'authorization');
-  }, [data.token]);
+  }, []);
 
   return (
     <AuthContext.Provider

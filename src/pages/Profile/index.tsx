@@ -41,14 +41,13 @@ const Profile: React.FC = () => {
             then: Yup.string().required('Campo obrigatório'),
             otherwise: Yup.string(),
           }),
-          password_confirmation: Yup.string().when('old_password', {
-            is: val => !!val.length,
-            then: Yup.string().required('Campo obrigatório'),
-            otherwise: Yup.string(),
-          }).oneOf(
-            [Yup.ref('password')],
-            'Confirmação incorreta',
-          ),
+          password_confirmation: Yup.string()
+            .when('old_password', {
+              is: val => !!val.length,
+              then: Yup.string().required('Campo obrigatório'),
+              otherwise: Yup.string(),
+            })
+            .oneOf([Yup.ref('password')], 'Confirmação incorreta'),
         });
         await schema.validate(data, {
           abortEarly: false,
@@ -73,34 +72,44 @@ const Profile: React.FC = () => {
         });
       }
     },
-    [addToast, history],
+    [addToast, history, updateUser],
   );
 
-  const handleAvatarChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const formData = new FormData();
-      formData.append('avatar', e.target.files[0]);
-      api.patch('/users/avatar', formData).then(response => {
-        updateUser(response.data);
-        addToast({
-          type: 'success', title: 'Avatar atualizado!'
-        })
-      });
-    }
-  }, [addToast]);
+  const handleAvatarChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        const formData = new FormData();
+        formData.append('avatar', e.target.files[0]);
+        api.patch('/users/avatar', formData).then(response => {
+          updateUser(response.data);
+          addToast({
+            type: 'success',
+            title: 'Avatar atualizado!',
+          });
+        });
+      }
+    },
+    [addToast, updateUser],
+  );
 
   return (
     <Container>
       <header>
         <div>
-          <Link to="/dashboard"><FiArrowLeft /></Link>
+          <Link to="/dashboard">
+            <FiArrowLeft />
+          </Link>
         </div>
       </header>
       <Content>
-        <Form ref={formRef} onSubmit={handleSubmit} initialData={{
-          name: user.name,
-          email: user.email,
-        }}>
+        <Form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          initialData={{
+            name: user.name,
+            email: user.email,
+          }}
+        >
           <AvatarInput>
             <img src={user.avatar_url} alt={user.name} />
             <label htmlFor="avatar">

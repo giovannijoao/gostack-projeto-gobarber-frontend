@@ -18,7 +18,7 @@ interface SignInFormData {
 }
 
 const SignIn: React.FC = () => {
-  const { signIn, user } = useAuth();
+  const { signIn } = useAuth();
   const { addToast } = useToast();
   const history = useHistory();
   const formRef = useRef<FormHandles>(null);
@@ -53,7 +53,7 @@ const SignIn: React.FC = () => {
         });
       }
     },
-    [signIn, addToast],
+    [signIn, addToast, history],
   );
 
   return (
